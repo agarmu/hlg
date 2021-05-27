@@ -37,11 +37,11 @@ func main() {
 				port = parsedPort
 			} else {
 				color.Yellow(`Given port %d not within range 0...65535
-			Defaulting to port %d`, parsedPort, port)
+				Defaulting to port %d`, parsedPort, port)
 			}
 		} else {
 			color.Yellow(`Error parsing port data (%v): %v
-		Defaulting to port %d`, rawPortData, err, port)
+			Defaulting to port %d`, rawPortData, err, port)
 		}
 	}
 	portString := fmt.Sprintf(":%d", port)
@@ -70,7 +70,7 @@ func main() {
 	defer func() {
 		fmt.Println()
 		color.HiWhite(`hlg - The Http Logger
-		Copyright 2021 Mukul Agarwal
-		Released under the GNU Affero General Public License, available at <https://www.gnu.org/licenses/>.`)
+			Copyright 2021 Mukul Agarwal
+			Released under the GNU Affero General Public License, available at <https://www.gnu.org/licenses/>.`)
 	}()
 }
