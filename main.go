@@ -24,12 +24,13 @@ import (
 	"github.com/fatih/color"
 )
 
-func main() {
-	var port int = 8080
-	var header bool = false
+var (
+	port   int  = 8080
+	header bool = false
+)
 
+func loadPortData() string {
 	rawPortData := os.Getenv("PORT")
-	rawHeaderData := os.Getenv("HEADER")
 	if rawPortData != "" {
 		parsedPort, err := strconv.Atoi(rawPortData)
 		if err == nil {
@@ -44,33 +45,35 @@ func main() {
 			Defaulting to port %d`, rawPortData, err, port)
 		}
 	}
-	portString := fmt.Sprintf(":%d", port)
+	return fmt.Sprintf("0.0.0.0:%d", port)
+}
 
+func loadHeaderData() {
+	rawHeaderData := os.Getenv("HEADER")
 	if rawHeaderData != "" {
 		header = true
 	}
+}
 
-	handle_request := func(w http.ResponseWriter, req *http.Request) {
-		color.Green("%s %s", req.Method, req.URL.Path)
-		if header {
-			for name, headers := range req.Header {
-				for _, h := range headers {
-					color.Cyan("\t%v: %v", name, h)
-				}
+func handle_request(w http.ResponseWriter, req *http.Request) {
+	color.Green("%s %s", req.Method, req.URL.Path)
+	if header {
+		for name, headers := range req.Header {
+			for _, h := range headers {
+				color.Cyan("\t%v: %v", name, h)
 			}
 		}
-		w.WriteHeader(404) // not found
 	}
+	w.WriteHeader(404) // not found
+}
 
+func main() {
+	portString := loadPortData()
 	http.HandleFunc("/", handle_request)
 
-	color.Green("Listening at port %d", port)
-	fmt.Println()
-	http.ListenAndServe(portString, nil)
-	defer func() {
-		fmt.Println()
-		color.HiWhite(`hlg - The Http Logger
-			Copyright 2021 Mukul Agarwal
-			Released under the GNU Affero General Public License, available at <https://www.gnu.org/licenses/>.`)
-	}()
+	go color.Green("Listening at port %d", port)
+	err := http.ListenAndServe(portString, nil)
+	if err != nil {
+		color.Red("Error listening and serving: %v", err)
+	}
 }
